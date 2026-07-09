@@ -163,14 +163,19 @@ def scrape_progress(season_number):
 
     contestant_names = []
 
-    if season_number != 10:
+    if season_number == 10:
+        #Season 10's page has rows and columns switched in table.
+        for th in progress_table.select("th:first-child:not([scope='row'])"):
+            contestant = th.get_text(strip=True)
+            if contestant != "Contestant":
+                contestant_names.append(contestant)
+
+    else:
         for th in progress_table.select("th:first-child:not([scope='col'])"):
             contestant = th.get_text(strip=True)
-            contestant_names.append(contestant)
-    else:
-        for th in progress_table.select("th:first-child"):
-            contestant = th.get_text(strip=True)
-            contestant_names.append(contestant)
+            #Season 7 has episodes listed as rows instead of columns, so removing first-child of episodes row.
+            if contestant != "1[3]":
+                contestant_names.append(contestant)
 
     for tr in progress_table.find_all("tr"):
         cr_cells = []
@@ -188,12 +193,6 @@ def scrape_progress(season_number):
                         cr_cells.append("")
         progress_rows.append(cr_cells)
 
-        """
-        cr_cells = []
-        for td in tr.find_all("td"):
-            cr_cells.append(td.get_text(strip=True))
-        progress_rows.append(cr_cells)
-        """
 
     progress_rows.pop(0)
     progress_rows.pop(0)
@@ -202,6 +201,9 @@ def scrape_progress(season_number):
     for row in progress_rows:
         row.insert(0, contestant_names[index])
         index += 1
+
+    for row in progress_rows:
+        row.insert(0, f"{season_number}")
 
     return progress_rows
 
@@ -228,9 +230,12 @@ def create_progress_csv():
 
     progress_data = scrape_progress_all_seasons()
     header_row = []
+    header_row.append("Season")
     header_row.append("Contestant")
     for num in range(1, 17):
         header_row.append(f"{num}")
+    #Account for split column for Season 16's Sapphira Cristal. Will clean in transform file.
+    header_row.append("17")
     with open("rpdr_progress_data.csv", "w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
 
