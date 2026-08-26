@@ -3,6 +3,7 @@ import requests
 import lxml
 import time
 import csv
+import pandas as pd
 
 def scrape_contestants(season_number):
     """
@@ -99,22 +100,18 @@ def scrape_contestants_all_seasons():
 
     return contestant_data
 
-def create_contestants_csv():
+def create_contestants_df():
     """
     Creates csv file with scraped contestant data.
     """
 
     contestant_data = scrape_contestants_all_seasons()
+    df = pd.DataFrame(columns=("Season", "Contestant", "Age", "Hometown", "Placement"))
+    for season in contestant_data:
+        new_row = pd.DataFrame(season, columns=df.columns)
+        df = pd.concat([df, new_row], ignore_index=True)
 
-    with open("rpdr_contestant_data.csv", "w", newline="", encoding="utf-8") as file:
-        writer = csv.writer(file)
-
-        #Add header row.
-        writer.writerow(["Season", "Contestant", "Age", "Hometown", "Placement"])
-
-        for season in contestant_data:
-            for data_row in season:
-                writer.writerow(data_row)
+    return df
 
 def scrape_progress(season_number):
     """
@@ -223,7 +220,7 @@ def scrape_progress_all_seasons():
 
     return progress_data
 
-def create_progress_csv():
+def create_progress_df():
     """
     Creates csv file with scraped progress data from each season.
     """
@@ -236,15 +233,21 @@ def create_progress_csv():
         header_row.append(f"{num}")
     #Account for split column for Season 16's Sapphira Cristal. Will clean in transform file.
     header_row.append("17")
-    with open("rpdr_progress_data.csv", "w", newline="", encoding="utf-8") as file:
-        writer = csv.writer(file)
 
-        #Add header row.
-        writer.writerow(header_row)
+    header_tuple = ()
+    for col in header_row:
+        header_tuple += (f"{col}",)
 
-        for season in progress_data:
-            for data_row in season:
-                writer.writerow(data_row)
+    df = pd.DataFrame(columns=header_tuple)
 
-create_contestants_csv()
-create_progress_csv()
+    for season in progress_data:
+        for prog_row in season:
+            if len(prog_row) < len(header_tuple):
+                len_diff = len(header_tuple) - len(prog_row)
+                for i in range(len_diff):
+                    prog_row.append("")
+
+        new_row = pd.DataFrame(season, columns=df.columns)
+        df = pd.concat([df, new_row], ignore_index=True)
+
+    return df
