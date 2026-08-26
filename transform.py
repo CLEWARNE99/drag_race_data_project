@@ -1,8 +1,8 @@
 import pandas as pd
 
-def transform_contestant_data():
+def transform_contestant_data(contestant_data):
 
-    df = pd.read_csv("rpdr_contestant_data.csv")
+    df = contestant_data
 
     #Clean Placement column
     df["Placement"] = df["Placement"].ffill()
@@ -11,6 +11,7 @@ def transform_contestant_data():
     tag_list = ["[a]","[b]","[c]","[d]","[e]","[f]","[g]", "[h]"]
     for tag in tag_list:
         df["Contestant"] = df["Contestant"].str.replace(pat=tag, repl="")
+        df["Age"] = df["Age"].str.replace(pat=tag, repl="")
         df["Hometown"] = df["Hometown"].str.replace(pat=tag, repl="")
         df["Placement"] = df["Placement"].str.replace(pat=tag, repl="")
 
@@ -36,11 +37,12 @@ def transform_contestant_data():
     df["Age"] = df["Age"].astype(int)
     df["Placement"] = df["Placement"].astype(int)
 
-    print(df.to_string())
+    #print(df.to_string())
+    return df
 
-def transform_progress_data():
-    df = pd.read_csv("rpdr_progress_data.csv")
-
+def transform_progress_data(progress_data):
+    #df = pd.read_csv("rpdr_progress_data.csv")
+    df = progress_data
 
     #Remove wikipedia tags
     tag_list = ["[a]", "[b]", "[c]", "[d]", "[e]", "[f]", "[g]", "[h]"]
@@ -53,7 +55,4 @@ def transform_progress_data():
     col_2 = df.pop("Contestant")
     df.insert(0, "Contestant", col_2)
 
-
-    print(df.to_string())
-transform_contestant_data()
-transform_progress_data()
+    return df
