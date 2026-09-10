@@ -1,7 +1,7 @@
 import pandas as pd
 
 def transform_contestant_data(contestant_data):
-
+    print("Transforming contestant data...")
     df = contestant_data
 
     #Clean Placement column
@@ -31,6 +31,12 @@ def transform_contestant_data(contestant_data):
     #Strip whitespace
     df["Placement"] = df["Placement"].str.strip()
 
+    #Strip spaces in hometown column for string consistency
+    df["Hometown"] = df["Hometown"].str.replace(", ", ",")
+
+    #Valentina's hometown listed as Echo Park, Los Angeles, CA. Changing to simply Los angeles, CA for consistency.
+    df["Hometown"] = df["Hometown"].str.replace("Echo Park,Los Angeles,California", "Los Angeles,California")
+
     #Transform data types
     #Transform from string into numerical value for age and placement cols
     df["Season"] = df["Season"].astype(int)
@@ -41,7 +47,7 @@ def transform_contestant_data(contestant_data):
     return df
 
 def transform_progress_data(progress_data):
-    #df = pd.read_csv("rpdr_progress_data.csv")
+    print("Transforming contestant progress data...")
     df = progress_data
 
     #Remove wikipedia tags
@@ -51,8 +57,21 @@ def transform_progress_data(progress_data):
         for num in range(1, 18):
             df[f"{num}"] = df[f"{num}"].str.replace(pat=tag, repl="")
 
+    # Contestant "Shangela Laquifa Wadley" is listed as just "Shangela" Season 3. Updating
+    # Season 2 name for data consistency.
+    df["Contestant"] = df["Contestant"].replace({"Shangela Laquifa Wadley": "Shangela"})
+
     #Swap columns 1 and 2
     col_2 = df.pop("Contestant")
     df.insert(0, "Contestant", col_2)
+
+    #Special case: Sapphira Crystal Runner-up and Miss C: Wikipedia lists separate column. Combine results to 1 col, drop last col which is then empty.
+    df.iloc[201, 17] = "Runner-up Miss C"
+    df.drop(df.columns[-1], axis=1, inplace=True)
+
+    #Change data from wide to long for optimal analysis. Remove rows with empty "Result" val.
+    df = df.melt(id_vars=["Contestant", "Season"], var_name="Episode", value_name="Result")
+
+    df = df[df["Result"] != ""]
 
     return df
