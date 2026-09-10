@@ -2,14 +2,15 @@ from bs4 import BeautifulSoup
 import requests
 import lxml
 import time
-import csv
 import pandas as pd
+from requests import session
+
 
 def scrape_contestants(season_number):
     """
     Takes RPDR season number, and scrapes Wikipedia page for Contestants table.
     """
-
+    print(f"Scraping contestants, season {season_number}")
     #Create user_agent per Wikipedia bot policy.
     user_agent = {"User-Agent": "Drag_Race_Scraping_Test/1.0 (github.com/CLEWARNE99)"}
 
@@ -102,8 +103,9 @@ def scrape_contestants_all_seasons():
 
 def create_contestants_df():
     """
-    Creates csv file with scraped contestant data.
+    Creates DataFrame with scraped contestant data.
     """
+    print("Extracting contestant data...")
 
     contestant_data = scrape_contestants_all_seasons()
     df = pd.DataFrame(columns=("Season", "Contestant", "Age", "Hometown", "Placement"))
@@ -117,6 +119,8 @@ def scrape_progress(season_number):
     """
     Takes season number, and scrapes progress data from that season.
     """
+
+    print(f"Scraping contestant progress, season {season_number}")
 
     # Create user_agent per Wikipedia bot policy.
     user_agent = {"User-Agent": "Drag_Race_Scraping_Test/1.0 (github.com/CLEWARNE99)"}
@@ -222,8 +226,10 @@ def scrape_progress_all_seasons():
 
 def create_progress_df():
     """
-    Creates csv file with scraped progress data from each season.
+    Creates DataFrame with scraped progress data from each season.
     """
+
+    print("Extracting progress data...")
 
     progress_data = scrape_progress_all_seasons()
     header_row = []
