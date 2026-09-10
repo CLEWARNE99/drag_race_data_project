@@ -85,7 +85,7 @@ with main_col_3:
     st.plotly_chart(age_fig, use_container_width=True)
 
 with main_col_4:
-    st.header("Winners vs. # of Challenger Wins")
+    st.header("Winners vs. # of Challenge Wins")
     st.text("Winning challenges is a huge part of competing on Drag Race. Queens who have won the show have all won"
             " at least one challenge. But how many challenges does it take to win the season? It seems the sweet spot is"
             " 3, with some pulling it out with less wins, and a few overachievers going for 4!")
