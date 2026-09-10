@@ -29,7 +29,7 @@ def gen_contestant_hometowns(season=None):
                           "FROM contestants "
                           "GROUP BY state "
                           "ORDER BY Queens DESC")
-    #######FINISH######
+
     else:
         hometown_stats = (
                         "SELECT SUBSTR(Hometown, (INSTR(Hometown, ',') + 1), LENGTH(Hometown)) as state, COUNT(*) as num "
