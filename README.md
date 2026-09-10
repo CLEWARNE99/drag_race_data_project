@@ -9,6 +9,9 @@ As someone who loves stats, reality tv, and drag, I knew this show was the perfe
 
 This project contains both a data pipeline, and a Streamlit app performing some data analysis/visualization on the data generated with the pipeline.
 
+## Tech Stack:
+Python, SQL, SQLite, Streamlit, pandas, Plotly, BeautifulSoup
+
 ## The ETL Pipeline:
 - extract.py uses BeautifulSoup, lxml, and pandas to scrape data from the Wikipedia pages of each U.S. season of RuPaul's Drag Race.
 - transform.py uses pandas to transform and clean the extracted data.
